@@ -1,0 +1,453 @@
+1.///-------**** Reverse numbers code ******----------
+
+
+package main
+
+import "fmt"
+
+func buildArray(nums []int) []int {
+    n := len(nums)
+    for i:=0; i<n; i++{
+        
+            nums[i] = nums[i] + (nums[nums[i]] % n) * n
+            
+    }
+        
+     for i:=0; i<n; i++{
+            nums[i] = nums[i] / n
+            
+    }
+    return nums
+}
+
+
+(OR)
+
+func buildArray(nums []int) []int {
+    ans := make([]int,len(nums))
+    for i:=0; i<len(nums); i++ {
+        ans[i] = nums[nums[i]]
+    }
+    return ans
+}
+
+
+------------------------------------------------------------>>>>>>>
+
+
+2..-------****** FINAL VALUE OF VARIABLE ******-------
+
+package main
+
+import "fmt"
+
+func finalValueAfterOperations(operations []string) int {
+    x  := 0
+    for i := 0; i < len(operations); i++{
+        if operations[i]=="++X"||operations[i]=="X++"{
+            x++
+        }else{
+            x--
+        }
+    }
+            
+    return x
+}
+
+
+------------------>>>>>>>>>>>>>>>>>>>
+
+
+
+3..--------**** RICHEST CUSTOMER WEALTH ****--------
+
+package main
+
+import "fmt"
+
+func max(arr []int) int {
+        max := arr[0]
+        for i := 1; i < len(arr);i++ {
+                if arr[i] > max {
+                        max = arr[i]
+                }
+        }
+        return max
+}
+
+func maximumWealth(accounts [][]int) int {
+        m := len(accounts)
+        n := len(accounts[0])
+        var wealth []int
+        for i := 0; i < m; i++ {
+                sum := 0
+                for j := 0; j < n; j++ {
+                        sum = sum + accounts[i][j]
+                }
+                wealth = append(wealth,sum)
+        }
+        return max(wealth)
+}
+
+
+------------------------->>>>>>>>>>>>>>>>
+
+
+
+4..--------****** SHOPPINGLIST******----------
+https://github.com/prasanth127/ShoppingList/commits/main
+
+
+------------>>>>>>>>>>>
+
+
+
+5..--------***** HTTP SERVER & CLIENT SERVER CODES******----------
+
+
+package main
+
+import (
+    "context"
+    "encoding/json"
+    "fmt"
+    "io"
+    "io/ioutil"
+    "log"
+    "net/http"
+    "time"
+)
+
+func slowHandler(w http.ResponseWriter, req *http.Request) {
+
+    reqBody, err := ioutil.ReadAll(req.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("%s\n", reqBody)
+    //io.WriteString(w, string(reqBody))
+    responseBody, _ := json.Marshal(map[string]string{
+        "status":  "Success",
+        "message": "We got the requested body from client to server",
+    })
+    io.WriteString(w, string(responseBody))
+}
+
+func main() {
+    srv := http.Server{
+        Addr:         ":8080",
+        WriteTimeout: 2 * time.Second,
+        Handler:      http.HandlerFunc(slowHandler),
+    }
+
+    if err := srv.ListenAndServe(); err != nil {
+        fmt.Printf("Server failed: %s\n", err)
+    }
+
+    ctx := context.Background()
+    ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+    defer cancel()
+
+}
+
+--------------------2
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "io/ioutil"
+    "log"
+    "net/http"
+)
+
+func main() {
+    //Encode the data
+    postBody, _ := json.Marshal(map[string]string{
+        "name":  "india",
+        "email": "indiac@example.com",
+    })
+    responseBody := bytes.NewBuffer(postBody)
+    //Leverage Go's HTTP Post function to make request
+    resp, err := http.Post("http://localhost:8080", "application/json", responseBody)
+    //Handle Error
+    if err != nil {
+        log.Fatalf("An Error Occured %v", err)
+    }
+    defer resp.Body.Close()
+    //Read the response body
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        log.Fatalln(err)
+    }
+    sb := string(body)
+    log.Printf(sb)
+}
+
+
+
+<<<<<<-------------->>>>>>>>>>>
+
+
+6..-------***** PUBLISHER & SUBSCRIBER CODE *****----------
+
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+var (
+    topic   = make(chan int, 10)
+    data    = make(chan int)
+    done    = make(chan bool)
+    mutex   sync.Mutex
+    console = make([]string, 0)
+)
+
+func publisher() {
+    fmt.Println("Starting Publisher")
+    defer func() {
+        fmt.Println("Publisher is done")
+        close(topic)
+    }()
+    for {
+        select {
+        case v, ok := <-data:
+            if !ok {
+                return
+            }
+            fmt.Println("Published message:", v)
+            topic <- v
+        }
+    }
+}
+
+func subscriber(i int) {
+    fmt.Println("Starting Subscriber no.", i)
+    for msg := range topic {
+        fmt.Println("Received message:", msg, "by subscriber no.", i)
+    }
+
+    fmt.Println("Subscriber", i, "is done")
+    done <- true
+}
+
+func main() {
+    go publisher()
+    numSubscriber := 7
+    for i := 0; i < numSubscriber; i++ {
+        go subscriber(i + 1)
+    }
+
+    for i := 1; i <= 10000; i++ {
+        data <- i * i
+    }
+
+    close(data)
+
+    for i := 0; i < numSubscriber; i++ {
+        select {
+        case <-done:
+            //do nothing
+        }
+    }
+    fmt.Println("Main is done")
+}
+
+
+<<<<<<<------------>>>>>>>>>>>>>>>
+
+
+
+7..----------****** Write a package for 
+1. Creating File and writing data to it
+2. Email that file
+
+Write unit tests for it. Please see if the coverage is 100%  *****----------
+
+
+package main
+
+import (
+    "testing"
+)
+
+func TestMail(t *testing.T) {
+    fromMail := "-----------"
+    password := "##########"
+
+    toMail := "------++++------"
+    subject := "hello"
+    body := "india"
+    host := "smtp.gmail.com"
+    port := 587
+
+    s, err := Mail(fromMail, password, toMail, subject, body, host, port)
+
+    if s != "Success" && err != nil {
+        t.Errorf("Mail not sent!!")
+    }
+}
+
+
+-------*******.2
+package main
+
+import (
+    "crypto/tls"
+
+    gomail "gopkg.in/mail.v2"
+)
+
+func Mail(fromMail, password, toMail, subject, body, host string, port int) (string, error) {
+
+    m := gomail.NewMessage()
+    // Set E-Mail sender
+    m.SetHeader("From", fromMail)
+
+    // Set E-Mail receivers
+    m.SetHeader("To", toMail)
+
+    // Set E-Mail subject
+    m.SetHeader("Subject", subject)
+
+    // Set E-Mail body. You can set plain text or html with text/html
+    m.SetBody("text/plain", body)
+
+    // Settings for SMTP server
+    d := gomail.NewDialer(host, port, fromMail, password)
+
+    // This is only needed when SSL/TLS certificate is not valid on server.
+    // In production this should be set to false.
+    d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+    // Now send E-Mail
+    if err := d.DialAndSend(m); err != nil {
+        return "Fail", err
+    }
+
+    return "Success", nil
+}
+
+
+
+<<<<<<<------------->>>>>>>>>>>>>>>>>
+
+
+
+8./----------******* Enable Linter again in Makefile and then fix all the lint issues.
+Build the docker image once the linting issues are resolved.
+******-------------
+
+https://github.com/prasanth127/ShoppingList/commit/7051948608d86bef9148664cbedfcf1ec8814579
+
+
+<<<<<<<<<<<<------------>>>>>>>>>>
+
+
+9..--------**** MAX NUM OF WORDS FOUND IN SENTENCES*****------------
+
+func mostWordsFound(sentences []string) int {
+    ans := 0
+    for _, sentence := range sentences{
+        max := helper(sentence)
+        if max > ans {ans = max }
+    }
+  return ans
+}
+
+func helper (sentence string) int {-
+    n := 0
+    for _, c := range sentence{
+        if c == ' '{ n++ }
+        }
+    return n + 1
+    }
+
+
+
+<<<<<<<<<--------->>>>>>>>>>>>>>>>>>
+
+
+
+10..--------***** Populate Items in a Shopping List for a Given User****--------
+
+https://github.com/prasanth127/ShoppingList/commits/main
+
+
+
+<<<<<<<<---------------->>>>>>>>>>>>
+
+
+
+11./-------***Create independent service for passwords having these features:
+1. It should be able to encrypt passwords.
+2. It should be able to validate passwords.
+3. It should be able to generate random passwords. 
+ ***-------
+
+
+https://github.com/prasanth127/passwords/commit/7402626b258791f0f8681f42e3579d1633e51f9c
+
+
+<<<<<<<<<<<<<<----------------->>>>>>>>>>>>
+
+
+13./-------*** Curl to web container and take a snapshot of the response and paste it here.***-----------
+
+
+https://media.discordapp.net/attachments/931216652262064208/931240121049677854/Screenshot_7.png?width=842&height=473
+
+
+
+<<<<<<<<<<<------------->>>>>>>>>>>>>
+
+
+
+14./-------**** Create a docker image of password service and use it in shopping list by making changes to docker-compose.yml****------------
+
+https://cdn.discordapp.com/attachments/932652906581213185/932940084699860992/Password_docker_image.png
+
+https://cdn.discordapp.com/attachments/932652906581213185/932940168011337769/docker_compose_yaml.png
+
+
+<<<<<<<__________________>>>>>>>>>>>>>>>>>
+
+
+
+16./---------**** REVERSE STRING****---------
+
+
+func reverseString(s []byte) string {
+    b := []byte(s)
+    
+    for i,j := 0 ,len(b)-1; i<len(b)/2;i,j =i+1,j-1 {
+        
+        b[i],b[j] = b[j],b[i]
+    }
+    return string(b)
+}
+
+
+
+<<<<<<<<<<<<<<__________>>>>>>>>>>>>
+
+
+
+17./---------**** REVERSE LINKED LIST CODE (DS)*****---------
+
+func reverseList(head *ListNode) *ListNode {
+    current := head
+    var next *ListNode = nil
+    var prev *ListNode = nil
+    
+    for current != nil {
+        next = current.Next
+        current.Next = prev 
+        prev = current
+        current = next
+    }
+    return prev
+}
